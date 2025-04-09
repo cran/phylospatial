@@ -18,35 +18,49 @@ the details below. Can also specify \code{"all"} (the default) to calculate all 
 A matrix, \code{sf} data frame, or \code{SpatRaster} with a column or layer for each requested diversity metric.
 }
 \description{
-This function calculates a variety of diversity and endemism metrics including Faith's phylogenetic diversity,
-Shannon phylogenetic entropy, Simpson phylogentic diversity, relative phylogentic diversity, richness of clades,
-richness of terminals (typically species), and versions of all these metrics weighted by endemism (i.e. rarity).
-If continuous community data (probabilities or abundances) are provided, they are used in calculations, giving
-quantitative versions of the classic binary metrics.
+This function calculates a variety of alpha phylogenetic diversity metrics, including measures of richness,
+regularity, and divergence. If continuous community data (probabilities or abundances) are provided,
+they are used in calculations, giving quantitative versions of the classic binary metrics.
 }
 \details{
-The function calculates the following metrics:
+The function calculates the following metrics. Endemism-weighted versions of most metrics are
+available. All metrics are weighted by occurrence probability or abundance, if applicable.
+
+\strong{Richness measures:}
 \itemize{
-\item TD---Terminal Diversity, i.e. richness of terminal taxa (in many cases these are species): \eqn{\sum_{t}{p_t}}
-\item TE---Terminal Endemism, i.e. total endemism-weighted diversity of terminal taxa, a.k.a. "weighted endemism": \eqn{\sum_{t}{p_t r_t^{-1}}}
-\item CD---Clade Diversity, i.e. richness of taxa at all levels (equivalent to PD on a cladogram): \eqn{\sum_{b}{p_b}}
-\item CE---Clade Endemism, i.e. total endemism-weighted diversity of taxa at all levels (equivalent to PE on a cladrogram): \eqn{\sum_{b}{p_b r_b^{-1}}}
-\item PD---Phylogenetic Diversity: \eqn{\sum_{b}{L_b p_b}}
-\item PE---Phylogenetic Endemism, i.e. endemism-weighted PD: \eqn{\sum_{b}{L_b p_b r_b^{-1}}}
-\item RPD---Relative Phylogenetic Diversity, i.e. branch length of mean resident (equivalent to PD / CR): \eqn{\sum_{b}{L_b p_b} / \sum_{b}{p_b}}
-\item RPE---Relative Phylogenetic Endemism, i.e. mean endemism-weighted branch length (equivalent to PE / CE): \eqn{\sum_{b}{L_b p_b r_b^{-1}} / \sum_{b}{p_b r_b^{-1}}}
-\item ShPD---Shannon Phylogenetic Diversity, a.k.a. "phylogenetic entropy": \eqn{-\sum_{b}{L_b n_b log(n_b)}}
-\item ShPE--Shannon phylogenetic Endemism, an endemism-weighted version of ShPD: \eqn{-\sum_{b}{L_b n_b log(e_b) r_b^{-1}}}
-\item SiPD---Simpson Phylogenetic Diversity: \eqn{1 / \sum_{b}{L_b n_b^2}}
-\item SiPE---Simpson Phylogenetic Endemism, an endemism-weighted version of SiPD: \eqn{1 / \sum_{b}{L_b r_b^{-1} e_b^2}}
+\item \strong{TD}---Terminal Diversity, i.e. richness of terminal taxa (in many cases these are species): \eqn{\sum_{t}{p_t}}
+\item \strong{TE}---Terminal Endemism, i.e. total endemism-weighted diversity of terminal taxa, a.k.a. "weighted endemism": \eqn{\sum_{t}{p_t r_t^{-1}}}
+\item \strong{CD}---Clade Diversity, i.e. richness of taxa at all levels (equivalent to PD on a cladogram): \eqn{\sum_{b}{p_b}}
+\item \strong{CE}---Clade Endemism, i.e. total endemism-weighted diversity of taxa at all levels (equivalent to PE on a cladrogram): \eqn{\sum_{b}{p_b r_b^{-1}}}
+\item \strong{PD}---Phylogenetic Diversity, i.e. total branch length occurring in a site: \eqn{\sum_{b}{L_b p_b}}
+\item \strong{PE}---Phylogenetic Endemism, i.e. endemism-weighted PD: \eqn{\sum_{b}{L_b p_b r_b^{-1}}}
+\item \strong{ShPD}---Shannon Phylogenetic Diversity, a.k.a. "phylogenetic entropy" (this version is the log of the "effective diversity" version based on Hill numbers):
+\eqn{-\sum_{b}{L_b n_b log(n_b)}}
+\item \strong{ShPE}---Shannon phylogenetic Endemism, an endemism-weighted version of ShPD: \eqn{-\sum_{b}{L_b n_b log(e_b) r_b^{-1}}}
+\item \strong{SiPD}---Simpson Phylogenetic Diversity: \eqn{1 / \sum_{b}{L_b n_b^2}}
+\item \strong{SiPE}---Simpson Phylogenetic Endemism, an endemism-weighted version of SiPD: \eqn{1 / \sum_{b}{L_b r_b^{-1} e_b^2}}
 }
 
-where \eqn{b} indexes all taxa including terminals and larger clades; \eqn{t} indexes terminals only; \eqn{p_i} is the occurrence value
-(binary, probability, or abundance) of clade/terminal \eqn{i} in a given community; \eqn{L_b} is the
-length of the phylogenetic branch segment unique to clade \eqn{b}; and \eqn{r_i} is the sum of \eqn{p_i} across all sites.
+\strong{Divergence measures:}
+\itemize{
+\item \strong{RPD}---Relative Phylogenetic Diversity, i.e. mean branch segment length (equivalent to PD / CR): \eqn{\sum_{b}{L_b p_b} / \sum_{b}{p_b}}
+\item \strong{RPE}---Relative Phylogenetic Endemism, i.e. mean endemism-weighted branch segment length (equivalent to PE / CE): \eqn{\sum_{b}{L_b p_b r_b^{-1}} / \sum_{b}{p_b r_b^{-1}}}
+\item \strong{MPDT}---Mean Pairwise Distance between Terminals, i.e. the classic MPD metric. This is the average of cophenetic distances, weighted by \eqn{p_t}.
+\item \strong{MPDN}---Mean Pairwise Distance between Nodes, an experimental version of MPD that considers distances between every pair of non-nested clades, putting more weight on deeper branches than does MPDT.
+This is the mean of distances between all collateral (non-lineal) node pairs including terminal and internal nodes, weighted by \eqn{p_b}.
+\item Note that divergence can also be assessed by using \code{ps_rand()} to run null model analyses of richness measures like PD.
+}
 
-For Shannon and Simpson indices, only nonzero elements of \eqn{p_b} are used, \eqn{n_b = p_b / \sum_{b}{p_b L_b}}, and
-\eqn{e_b = p_b / \sum_{b}{p_b L_b r_b^{-1}}}.
+\strong{Regularity measures}:
+\itemize{
+\item \strong{VPDT}---Variance in Pairwise Distances between Terminals, i.e. the classic VPD metric, weighted by \eqn{p_t}.
+\item \strong{VPDN}---Variance in Pairwise Distances between Nodes, i.e. MPDN but variance.
+}
+
+In the above equations, \eqn{b} indexes all taxa including terminals and larger clades; \eqn{t} indexes terminals only; \eqn{p_i} is the occurrence value
+(binary, probability, or abundance) of clade/terminal \eqn{i} in a given community; \eqn{L_b} is the
+length of the phylogenetic branch segment unique to clade \eqn{b}; and \eqn{r_i} is the sum of \eqn{p_i} across all sites. For Shannon
+and Simpson indices, only nonzero elements of \eqn{p_b} are used, \eqn{n_b = p_b / \sum_{b}{p_b L_b}}, and \eqn{e_b = p_b / \sum_{b}{p_b L_b r_b^{-1}}}.
 }
 \examples{
 ps <- ps_simulate()
@@ -71,6 +85,9 @@ of the Royal Society B: Biological Sciences, 365(1558), 3599-3609.
 
 Mishler, B. D., Knerr, N., González-Orozco, C. E., Thornhill, A. H., Laffan, S. W., & Miller, J. T. (2014).
 Phylogenetic measures of biodiversity and neo-and paleo-endemism in Australian Acacia. Nature Communications, 5(1), 4473.
+
+Tucker, C. M., Cadotte, M. W., Davies, T. J., et al. (2016) A guide to phylogenetic metrics for conservation, community
+ecology and macroecology. Biological Reviews, 92(2), 698-715.
 
 Kling, M. M., Mishler, B. D., Thornhill, A. H., Baldwin, B. G., & Ackerly, D. D. (2019). Facets of phylodiversity: evolutionary
 diversification, divergence and survival as conservation targets. Philosophical Transactions of the Royal Society B, 374(1763), 20170397.

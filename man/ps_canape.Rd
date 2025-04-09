@@ -7,7 +7,7 @@
 ps_canape(rand, alpha = 0.05)
 }
 \arguments{
-\item{rand}{An object returned by running \code{ps_rand} with .}
+\item{rand}{An object returned by running \code{ps_rand}. It must include the metrics PE, RPE, and CE.}
 
 \item{alpha}{Numeric value between 0 and 1 giving the one-tailed p-value threshold to use when
 determining significance.}
@@ -36,7 +36,7 @@ Endemism significance categories are defined as follows:
 # classic CANAPE using binary data and the curveball algorithm
 # (note that a real analysis would require a much higher `n_rand`)
 set.seed(123456)
-ps <- moss()
+ps <- ps_simulate(data_type = "binary")
 rand <- ps_rand(ps, metric = c("PE", "RPE", "CE"),
                 fun = "nullmodel", method = "curveball",
                 n_rand = 25, burnin = 10000, progress = FALSE)

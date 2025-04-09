@@ -5,7 +5,7 @@
 #' Categorization is based on randomization quantile values for PE, RPE, and CE (which Mishler et al. call "PE on
 #' the comparison tree").
 #'
-#' @param rand An object returned by running `ps_rand` with .
+#' @param rand An object returned by running `ps_rand`. It must include the metrics PE, RPE, and CE.
 #' @param alpha Numeric value between 0 and 1 giving the one-tailed p-value threshold to use when
 #' determining significance.
 #' @details
@@ -26,7 +26,7 @@
 #' # classic CANAPE using binary data and the curveball algorithm
 #' # (note that a real analysis would require a much higher `n_rand`)
 #' set.seed(123456)
-#' ps <- moss()
+#' ps <- ps_simulate(data_type = "binary")
 #' rand <- ps_rand(ps, metric = c("PE", "RPE", "CE"),
 #'                 fun = "nullmodel", method = "curveball",
 #'                 n_rand = 25, burnin = 10000, progress = FALSE)
