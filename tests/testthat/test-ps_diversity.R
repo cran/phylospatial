@@ -1,5 +1,6 @@
 
 test_that("ps_diversity runs without error on example data", {
+      skip_on_cran() # due to processing time
       expect_no_error(ps_diversity(moss(), "all"))
       expect_no_error(ps_diversity(moss("polygon"), "all"))
 })
@@ -46,7 +47,7 @@ test_that("diversity measures match `adiv::evodiv()` and `hillR::hill_phylo()` f
       occ <- occupied(ps)
 
       # diversity metrics
-      div <- as.data.frame(ps_diversity(ps, spatial = FALSE))[occ,]
+      div <- as.data.frame(ps_diversity(ps, spatial = FALSE, metric = c("ShPD", "SiPD")))[occ,]
       # a <- as.data.frame(suppressWarnings(
       #       adiv::evodiv(ps$tree,
       #                    ps_get_comm(ps, tips_only = TRUE, spatial = FALSE)[occ,],
