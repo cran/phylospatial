@@ -5,6 +5,11 @@ knitr::opts_chunk$set(
 fig.dim = c(6, 4)
 )
 
+if (!requireNamespace("tmap", quietly = TRUE) || grepl("devel", R.version.string)) {
+  knitr::opts_chunk$set(eval = FALSE)
+  message("Package 'tmap' needed for this vignette. Either it is not installed, or it is being called from R-devel where it has compatibility issues. Code will not be evaluated.")
+}
+
 ## ----setup, message=FALSE, warning=FALSE--------------------------------------
 library(phylospatial); library(tmap)
 ps <- moss()
@@ -20,15 +25,20 @@ tm_shape(div$PE) +
 
 ## ----rand, eval=FALSE---------------------------------------------------------
 # rand <- ps_rand(ps, n_rand = 1000, progress = FALSE,
-#                 metric = c("PD", "PE", "CE", "RPE"))
+#                 metric = c("PD", "PE", "CE", "RPE"),
+#                 fun = "quantize", method = "curvecat")
 # tm_shape(rand$qPE) +
 #       tm_raster(col.scale = tm_scale_continuous(values = "inferno")) +
 #       tm_layout(legend.outside = TRUE)
 
 ## ----precompute, eval=FALSE, echo=FALSE---------------------------------------
 # # pre-process to avoid exceeding CRAN runtime limits -- need to manually run this when updating vignette!
-# rand0 <- ps_rand(ps, n_rand = 1000, metric = c("PD", "PE", "CE", "RPE"))
-# terra::writeRaster(rand0, "~/Documents/R/phylospatial/inst/extdata/alpha-diversity-rand.tif", overwrite = TRUE)
+# rand0 <- ps_rand(ps, n_rand = 1000, n_cores = 8, progress = TRUE,
+#                  metric = c("PD", "PE", "CE", "RPE"),
+#                 fun = "quantize", method = "curvecat")
+# terra::writeRaster(rand0,
+#                    "~/Documents/R/phylospatial/inst/extdata/alpha-diversity-rand.tif",
+#                    overwrite = TRUE)
 
 ## ----postcompute, echo=FALSE--------------------------------------------------
 rand <- terra::rast(system.file("extdata", "alpha-diversity-rand.tif", package = "phylospatial"))

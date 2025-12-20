@@ -1,6 +1,6 @@
 Package: phylospatial
 Title: Spatial Phylogenetic Analysis
-Version: 1.1.1
+Version: 1.2.0
 Authors@R: 
     person("Matthew", "Kling", , "mattkling@berkeley.edu", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0001-9073-4240"))
@@ -13,9 +13,9 @@ Description: Analyze spatial phylogenetic diversity patterns.
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.3.2
-Imports: ape, sf, stats, terra, vegan
+Imports: ape, sf, stats, terra, utils, vegan
 Suggests: canaper, furrr, future, testthat (>= 3.0.0), betapart, knitr,
-        rmarkdown, tmap, magrittr, hillR, picante, phytools
+        rmarkdown, tmap, magrittr, hillR, picante, phytools, nullcat
 URL: https://matthewkling.github.io/phylospatial/,
         https://github.com/matthewkling/phylospatial
 Config/testthat/edition: 3
@@ -23,9 +23,9 @@ Depends: R (>= 3.5)
 VignetteBuilder: knitr
 BugReports: https://github.com/matthewkling/phylospatial/issues
 NeedsCompilation: no
-Packaged: 2025-05-02 13:34:53 UTC; matthewkling
+Packaged: 2025-12-19 18:45:27 UTC; matthewkling
 Author: Matthew Kling [aut, cre, cph] (ORCID:
     <https://orcid.org/0000-0001-9073-4240>)
 Maintainer: Matthew Kling <mattkling@berkeley.edu>
 Repository: CRAN
-Date/Publication: 2025-05-02 14:00:02 UTC
+Date/Publication: 2025-12-20 15:00:02 UTC

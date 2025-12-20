@@ -5,6 +5,11 @@ knitr::opts_chunk$set(
   fig.dim = c(6, 4)
 )
 
+if (!requireNamespace("tmap", quietly = TRUE) || grepl("devel", R.version.string)) {
+  knitr::opts_chunk$set(eval = FALSE)
+  message("Package 'tmap' needed for this vignette. Either it is not installed, or it is being called from R-devel where it has compatibility issues. Code will not be evaluated.")
+}
+
 ## ----init, message=FALSE, warning=FALSE---------------------------------------
 library(phylospatial); library(tmap); library(magrittr)
 
