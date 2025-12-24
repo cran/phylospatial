@@ -23,7 +23,7 @@ print.phylospatial <- function(x, ...){
 #' @return A plot of the tree or community data.
 #' @method plot phylospatial
 #' @examples
-#' ps <- ps_simulate()
+#' ps <- ps_simulate(20, 20, 20)
 #' plot(ps, "tree")
 #' plot(ps, "comm")
 #' @export
@@ -40,6 +40,6 @@ plot.phylospatial <- function(x, y = c("tree", "comm"),
             comm <- ps_get_comm(x, tips_only = FALSE)
             i <- sample(ncol(x$comm), n)
             if(inherits(x$spatial, "SpatRaster")) terra::plot(comm[[i]], ...)
-            if(inherits(x$spatial, "sf")) terra::plot(comm[, i], max.plot = n, ...)
+            if(inherits(x$spatial, "sf")) plot(comm[, i], max.plot = n, ...)
       }
 }
