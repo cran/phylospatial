@@ -10,6 +10,8 @@ ps_dissim(
   fun = c("vegdist", "designdist", "chaodist"),
   endemism = FALSE,
   normalize = FALSE,
+  tips_only = FALSE,
+  n_cores = NULL,
   ...
 )
 }
@@ -35,6 +37,18 @@ to derive endemism before computing distances.}
 \item{normalize}{Logical indicating whether community values should be divided by row totals (community sums) before
 computing distances. If \code{TRUE}, dissimilarity is based on proportional community composition. Normalization is
 applied after endemism.}
+
+\item{tips_only}{Logical indicating whether to compute dissimilarity using only terminal taxa (\code{TRUE})
+rather than the full phylogenetic community matrix (\code{FALSE}, the default). When \code{TRUE}, branch length
+weighting is skipped and the result is a standard (non-phylogenetic) community dissimilarity.
+Endemism and normalization options still apply.}
+
+\item{n_cores}{Integer controlling the computation backend. The default \code{NULL} uses \code{parallelDist} with
+all available cores if installed, falling back to \code{vegan} otherwise. Setting \code{n_cores = 0} forces the
+\code{vegan} backend. Setting \code{n_cores} to a positive integer uses \code{parallelDist} with that many threads
+(requires \code{parallelDist} package). The \code{parallelDist} backend is faster than \code{vegan} even single-threaded
+for supported methods; unsupported methods (e.g. custom \code{designdist} formulas, turnover decomposition)
+always fall back to \code{vegan} with a message.}
 
 \item{...}{Additional arguments passed to \code{fun}.}
 }

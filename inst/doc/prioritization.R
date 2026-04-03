@@ -14,8 +14,8 @@ if (!requireNamespace("tmap", quietly = TRUE) || grepl("devel", R.version.string
 library(phylospatial); library(tmap); library(magrittr)
 
 ps <- moss()
-init <- seq(1, 0, length.out = nrow(ps$comm))
-cost <- runif(nrow(ps$comm), 10, 1000)
+init <- seq(1, 0, length.out = ps$n_sites)
+cost <- runif(ps$n_sites, 10, 1000)
 
 ## ----optim, eval=FALSE--------------------------------------------------------
 # priority <- ps_prioritize(ps, init = init, cost = cost)
