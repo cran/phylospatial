@@ -18,6 +18,34 @@ ps <- moss()
 ps <- ps_add_dissim(ps, method = "sorensen", endemism = TRUE, normalize = TRUE)
 ps
 
+## ----geodist, message=FALSE, warning=FALSE------------------------------------
+phy_beta <- as.vector(ps_dissim(ps, method = "sorensen"))
+spp_beta <- as.vector(ps_dissim(ps, method = "sorensen", tips_only = TRUE))
+geo_dist <- as.vector(ps_geodist(ps)) / 1000  # convert to km
+
+# subsample for plotting (full pairwise set is huge)
+ss <- sample(length(phy_beta), 5000)
+
+plot(geo_dist[ss], phy_beta[ss],
+     pch = ".", col = adjustcolor("steelblue", 0.3),
+     xlab = "Geographic distance (km)",
+     ylab = "Dissimilarity",
+     ylim = c(0, 1))
+points(geo_dist[ss], spp_beta[ss],
+       pch = ".", col = adjustcolor("tomato", 0.3))
+ 
+# loess trend lines
+lo_phy <- loess(phy_beta[ss] ~ geo_dist[ss])
+lo_spp <- loess(spp_beta[ss] ~ geo_dist[ss])
+ox <- order(geo_dist[ss])
+lines(geo_dist[ss][ox], predict(lo_phy)[ox], col = "steelblue", lwd = 2)
+lines(geo_dist[ss][ox], predict(lo_spp)[ox], col = "tomato", lwd = 2)
+ 
+legend("bottomright",
+       legend = c("Phylogenetic", "Species"),
+       col = c("steelblue", "tomato"),
+       lwd = 2, bty = "n")
+
 ## ----ordinate, message=FALSE, warning=FALSE-----------------------------------
 ps %>%
       ps_ordinate(method = "pca", k = 4) %>%
