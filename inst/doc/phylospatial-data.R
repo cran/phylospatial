@@ -61,3 +61,16 @@ plot(ps, "tree", type = "fan", show.tip.label = FALSE)
 ps <- phylospatial(comm)
 plot(ps, "tree", type = "fan")
 
+## ----tree_scaling, fig.dim = c(10, 4)-----------------------------------------
+moss_tree <- read.tree(system.file("extdata", "moss_tree.nex", package = "phylospatial"))
+tree_01 <- rescale_tree(moss_tree, "tip1")
+tree_deep <- slice_tree(tree_01, min = 0, max = 0.5, from = "root")
+tree_shallow <- slice_tree(tree_01, min = 0, max = 0.5, from = "tips")
+tree_clado <- uniform_tree(moss_tree)
+
+par(mfrow = c(1, 4), mar = c(2, 1, 2, 1))
+plot(moss_tree, show.tip.label = FALSE, main = "original")
+plot(tree_shallow, show.tip.label = FALSE, main = "sliced (recent)")
+plot(tree_deep, show.tip.label = FALSE, main = "sliced (ancient)")
+plot(tree_clado, show.tip.label = FALSE, main = "cladogram")
+

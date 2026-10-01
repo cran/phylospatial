@@ -1,3 +1,17 @@
+# phylospatial 1.5.0
+
+* New tree scaling functions modify a phylogeny's branch lengths to focus analyses on particular parts of evolutionary history. `slice_tree()` keeps only the portions of branches within a specified depth window, enabling time-sliced diversity analyses. `delta_tree()` applies Pagel's delta transformation while preserving total tree height, shifting emphasis toward deeper or more recent divergence. `uniform_tree()` sets all branch lengths to 1, so that phylogenetic diversity measures become clade richness. `rescale_tree()` is a unit conversion function that rescales branch lengths without changing their relative proportions. Transformed trees can be passed to `phylospatial()` or assigned to the `tree` element of an existing `phylospatial` object. See `?tree_scaling` and `vignette("phylospatial-data")`.
+
+* `phylospatial()` gains a `rescale` argument controlling how branch lengths are scaled during construction: `"sum1"` (the default, matching previous behavior) scales them to sum to 1, `"tip1"` scales the longest root-to-tip path to 1, and `"raw"` keeps the original units. The method used is recorded in the new `ps$rescale` element.
+
+* New function `ps_performance()` computes performance curves for `ps_prioritize()` results, tracking cumulative cost, protection added, conservation value, and the fraction of the tree meeting one or more range protection targets as sites are added in priority order. A `plot()` method is included. To support this, `ps_prioritize()` results now carry a `"prioritization"` attribute recording the settings, inputs, and raw rankings used.
+
+* Fixed a bug in `ps_prioritize()` where sites not selected before `max_iter` was reached were returned as `NA` rather than the lowest possible rank (as documented). With `method = "probable"` and `summarize = TRUE`, this also inflated summary statistics for sites selected in only a few reps, since the average rank, rank percentiles, and `topX` proportions were computed only across reps in which a site was selected. Unselected sites are now ranked last (i.e. equal to the number of occupied sites) in all outputs.
+
+* Fixed an error in `ps_prioritize()` when using `method = "probable"` and `summarize = FALSE` with spatial output. Rep layers are now named `rep1`, `rep2`, etc.
+
+* New function `ps_prioritizr()` converts a `phylospatial` object into a conservation planning problem for the `prioritizr` package, which finds optimal solutions using integer linear programming. Every branch of the phylogeny is treated as a conservation feature with a range protection target, and existing protection (`init`) counts toward targets. Three objectives are supported: minimum-cost target achievement (`"min_set"`), and maximum target coverage (`"targets"`) or minimum target shortfall (`"shortfall"`) within a budget. The returned problem can be extended with any of prioritizr's solvers, constraints, and penalties. Requires `prioritizr` (>= 9.0.0).
+
 # phylospatial 1.4.0
 
 * New function `ps_grid()` converts point occurrence data (e.g. GBIF records) into raster format suitable for use with phylospatial functions.
