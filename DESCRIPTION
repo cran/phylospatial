@@ -1,6 +1,6 @@
 Package: phylospatial
 Title: Spatial Phylogenetic Analysis
-Version: 1.5.0
+Version: 1.6.0
 Authors@R: 
     person("Matthew", "Kling", , "mattkling@berkeley.edu", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0001-9073-4240"))
@@ -24,9 +24,9 @@ VignetteBuilder: knitr
 BugReports: https://github.com/matthewkling/phylospatial/issues
 Config/roxygen2/version: 8.0.0
 NeedsCompilation: no
-Packaged: 2026-10-01 20:55:42 UTC; matthewkling
+Packaged: 2026-10-22 17:51:59 UTC; matthewkling
 Author: Matthew Kling [aut, cre, cph] (ORCID:
     <https://orcid.org/0000-0001-9073-4240>)
 Maintainer: Matthew Kling <mattkling@berkeley.edu>
 Repository: CRAN
-Date/Publication: 2026-10-01 21:20:02 UTC
+Date/Publication: 2026-10-22 18:20:02 UTC

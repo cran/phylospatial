@@ -413,8 +413,9 @@ data.) Then we pass them to <code>phylospatial()</code>:</p>
 <span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt;   - 8 lineages across 100 occupied sites (100 total) </span></span>
 <span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt;   - community data type: probability </span></span>
 <span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt;   - branch length rescaling: sum1 </span></span>
-<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt;   - spatial data class: SpatRaster </span></span>
-<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt;   - dissimilarity data: none</span></span></code></pre></div>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt;   - site weights: equal </span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt;   - spatial data class: SpatRaster </span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt;   - dissimilarity data: none</span></span></code></pre></div>
 </div>
 <div id="structure-of-a-phylospatial-object" class="section level2">
 <h2>Structure of a <code>phylospatial</code> object</h2>
@@ -427,8 +428,8 @@ Let’s look at each of these in turn, starting with the
 lengths of the input tree are scaled to sum to 1. We can use
 <code>plot()</code> function to view the tree.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">names</span>(ps)</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#&gt; [1] &quot;comm&quot;      &quot;tree&quot;      &quot;spatial&quot;   &quot;occupied&quot;  &quot;n_sites&quot;   &quot;data_type&quot;</span></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt; [7] &quot;clade_fun&quot; &quot;rescale&quot;   &quot;dissim&quot;</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;comm&quot;        &quot;tree&quot;        &quot;spatial&quot;     &quot;occupied&quot;    &quot;n_sites&quot;    </span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt;  [6] &quot;site_weight&quot; &quot;data_type&quot;   &quot;clade_fun&quot;   &quot;rescale&quot;     &quot;dissim&quot;</span></span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
 <span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>ps<span class="sc">$</span>tree</span>
 <span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
@@ -514,9 +515,18 @@ communities found in each row of the community matrix.</p>
 the <code>SpatRaster</code> data we supplied as our <code>comm</code>.
 You can also supply vector data (points, lines, or polygons) as an
 <code>sf</code> object. If the spatial data is in raster, polygon, or
-line format, <code>phylospatial</code> will check that all features have
-equal area or length, which is an important assumption underlying
-various functions in the package.</p>
+line format, <code>phylospatial</code> will check whether all features
+have equal area or length, and warn if they don’t. This matters because
+taxon range sizes, which underlie endemism metrics and spatial
+prioritization, treat every site as counting equally by default. If your
+sites differ in size, the <code>site_weight</code> argument lets them
+count unequally, for example in proportion to their area
+(<code>site_weight = &quot;area&quot;</code>, using areas calculated by
+<code>ps_area()</code>). Because a taxon present in a large site may
+occupy only a small part of it, there’s no single correct choice of
+weights; see the “Site weights” section of <code>?phylospatial</code>
+for the trade-offs involved. Any weights are stored in
+<code>ps$site_weight</code>.</p>
 <p>Two additional elements help manage the relationship between the
 community matrix and the spatial data. <code>ps$occupied</code> is an
 integer vector giving the row indices (in the original raster or data
@@ -567,16 +577,18 @@ one layer per species, which can be passed directly to
 <span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt;   - 8 lineages across 369 occupied sites (529 total) </span></span>
 <span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt;   - community data type: binary </span></span>
 <span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt;   - branch length rescaling: sum1 </span></span>
-<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt;   - spatial data class: SpatRaster </span></span>
-<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt;   - dissimilarity data: none</span></span></code></pre></div>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt;   - site weights: equal </span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt;   - spatial data class: SpatRaster </span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co">#&gt;   - dissimilarity data: none</span></span></code></pre></div>
 <p>By default, <code>ps_grid()</code> generates an Albers Equal Area
-grid centered on the data, so the output is ready for use with functions
-that assume equal-area sites. If you have an existing grid you want to
-match (e.g., from environmental raster layers), you can pass it as the
-<code>grid</code> argument. See <code>?ps_grid</code> for details. Note
-that <code>ps_grid()</code> handles only the spatial gridding step;
-coordinate cleaning (e.g., removing records in the ocean or with swapped
-lat/lon) and taxonomic name matching should be done beforehand.</p>
+grid centered on the data, so every cell can count equally toward range
+sizes without the need for site weights. If you have an existing grid
+you want to match (e.g., from environmental raster layers), you can pass
+it as the <code>grid</code> argument. See <code>?ps_grid</code> for
+details. Note that <code>ps_grid()</code> handles only the spatial
+gridding step; coordinate cleaning (e.g., removing records in the ocean
+or with swapped lat/lon) and taxonomic name matching should be done
+beforehand.</p>
 </div>
 <div id="a-realistic-example" class="section level2">
 <h2>A realistic example</h2>

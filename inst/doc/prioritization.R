@@ -10,13 +10,14 @@ if (!requireNamespace("tmap", quietly = TRUE) || grepl("devel", R.version.string
   message("Package 'tmap' needed for this vignette. Either it is not installed, or it is being called from R-devel where it has compatibility issues. Code will not be evaluated.")
 }
 
-## ----init, message=FALSE, warning=FALSE---------------------------------------
+## ----init, message=FALSE, warning=FALSE, fig.dim = c(7, 4)--------------------
 library(phylospatial); library(tmap); library(magrittr)
 
 ps <- moss()
-set.seed(123)
-init <- seq(1, 0, length.out = ps$n_sites)
-cost <- runif(ps$n_sites, 10, 1000)
+init <- moss(data = "protection")
+cost <- 1 + log1p(moss(data = "popdens"))
+
+terra::plot(c(init, cost), main = c("existing protection", "cost"))
 
 ## ----optim, eval=FALSE--------------------------------------------------------
 # priority <- ps_prioritize(ps, init = init, cost = cost)
@@ -58,16 +59,18 @@ plot(perf)
 plot(perf, yvar = "cov80")
 
 ## ----prob, eval=FALSE---------------------------------------------------------
+# set.seed(123)
 # priority <- ps_prioritize(ps, init = init, cost = cost, n_reps = 2500,
 #                           method = "prob", max_iter = 10)
 # 
 # tm_shape(priority$top10) +
 #       tm_raster(col.scale = tm_scale_continuous(values = "inferno"),
-#                 col.legend = tm_legend(title = "proporiton of runs\nin which site was\ntop-10 priority")) +
+#                 col.legend = tm_legend(title = "proportion of runs\nin which site was\ntop-10 priority")) +
 #       tm_layout(legend.outside = TRUE)
 
 ## ----precompute2, eval=FALSE, echo=FALSE--------------------------------------
 # # pre-process to avoid exceeding CRAN runtime limits -- need to manually run this when updating vignette!
+# set.seed(123)
 # priority <- ps_prioritize(ps, init = init, cost = cost, n_reps = 2500,
 #                           method = "prob", max_iter = 10)
 # terra::writeRaster(priority, "~/R/phylospatial/inst/extdata/priority-prob.tif", overwrite = TRUE)
@@ -77,7 +80,7 @@ priority <- terra::rast(system.file("extdata", "priority-prob.tif", package = "p
 
 tm_shape(priority$top10) + 
       tm_raster(col.scale = tm_scale_continuous(values = "inferno"),
-                col.legend = tm_legend(title = "proporiton of runs\nin which site was\ntop-10 priority")) + 
+                col.legend = tm_legend(title = "proportion of runs\nin which site was\ntop-10 priority")) + 
       tm_layout(legend.outside = TRUE)
 
 ## ----lambda, fig.dim = c(4.5, 5)----------------------------------------------

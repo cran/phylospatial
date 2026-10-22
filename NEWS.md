@@ -1,3 +1,19 @@
+# phylospatial 1.6.0
+
+* Sites no longer need to be equal-area. `phylospatial()` gains a `site_weight` argument controlling how much each site contributes to taxon range sizes, which underlie endemism metrics and prioritization. It can be `NULL` (the default, weighting all sites equally as before), `"area"` (weighting sites by their area), or one value per site supplied as a numeric vector, single-layer `SpatRaster`, or `sf` object (for example, site areas raised to a power between 0 and 1). Weights are rescaled to a mean of 1 across occupied sites and stored in `ps$site_weight`.
+
+  Site weights are used by endemism metrics in `ps_diversity()`, `ps_rand()`, and `ps_canape()`; the `endemism` option of `ps_dissim()` and `ps_regions()`; and `ps_prioritize()`, `ps_prioritizr()`, and `ps_performance()`. `ps_canaper()` does not support them. See the "Site weights" section of `?phylospatial` for guidance on choosing weights, and `?ps_rand` for how they interact with null models.
+
+* `phylospatial()` now warns, rather than throwing an error, when sites vary in area by more than `area_tol` and no `site_weight` is given. The check now considers occupied sites only, and is skipped when `site_weight` is provided.
+
+* New function `ps_area()` returns the area (km²) of each site in a raster, `sf` polygon, or `phylospatial` object, or the length (km) of line features, for use in deriving site weights.
+
+* `plot.phylospatial()` gains a `taxa` argument for choosing which lineage ranges to plot when `y = "comm"`, instead of a random sample.
+
+* `moss()` gains a `data` argument for loading companion layers on the same grid as the moss data set: `"protection"` (fraction of each cell in protected areas) and `"popdens"` (human population density), for use as `init` and `cost` in conservation prioritizations. Both are available in raster and polygon formats.
+
+* Fixed an error in `ps_prioritize()` and `ps_prioritizr()` when `init` or `cost` was supplied as an `sf` object, which the documentation already listed as supported.
+
 # phylospatial 1.5.0
 
 * New tree scaling functions modify a phylogeny's branch lengths to focus analyses on particular parts of evolutionary history. `slice_tree()` keeps only the portions of branches within a specified depth window, enabling time-sliced diversity analyses. `delta_tree()` applies Pagel's delta transformation while preserving total tree height, shifting emphasis toward deeper or more recent divergence. `uniform_tree()` sets all branch lengths to 1, so that phylogenetic diversity measures become clade richness. `rescale_tree()` is a unit conversion function that rescales branch lengths without changing their relative proportions. Transformed trees can be passed to `phylospatial()` or assigned to the `tree` element of an existing `phylospatial` object. See `?tree_scaling` and `vignette("phylospatial-data")`.
