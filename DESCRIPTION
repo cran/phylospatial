@@ -1,6 +1,6 @@
 Package: phylospatial
 Title: Spatial Phylogenetic Analysis
-Version: 1.6.0
+Version: 1.7.0
 Authors@R: 
     person("Matthew", "Kling", , "mattkling@berkeley.edu", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0001-9073-4240"))
@@ -10,12 +10,13 @@ Description: Analyze spatial phylogenetic diversity patterns.
     with null model randomization, analyze community turnover and biotic 
     regionalization, and perform spatial conservation prioritizations. All 
     functions support quantitative community data in addition to binary data.
+    Methods are described in Kling (2025) <doi:10.1111/2041-210X.70056>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Imports: ape, sf, stats, terra, utils, vegan
 Suggests: canaper, furrr, future, testthat (>= 3.0.0), betapart, knitr,
-        rmarkdown, tmap, magrittr, hillR, picante, phytools, nullcat
-        (>= 0.2.0), parallelDist, prioritizr (>= 9.0.0), highs, Matrix
+        rmarkdown, hillR, picante, phytools, nullcat (>= 0.3.0),
+        parallelDist, prioritizr (>= 9.0.0), highs, Matrix
 URL: https://matthewkling.github.io/phylospatial/,
         https://github.com/matthewkling/phylospatial
 Config/testthat/edition: 3
@@ -23,10 +24,11 @@ Depends: R (>= 3.5)
 VignetteBuilder: knitr
 BugReports: https://github.com/matthewkling/phylospatial/issues
 Config/roxygen2/version: 8.0.0
+RoxygenNote: 7.3.1
 NeedsCompilation: no
-Packaged: 2026-10-22 17:51:59 UTC; matthewkling
+Packaged: 2026-11-17 01:03:26 UTC; matthewkling
 Author: Matthew Kling [aut, cre, cph] (ORCID:
     <https://orcid.org/0000-0001-9073-4240>)
 Maintainer: Matthew Kling <mattkling@berkeley.edu>
 Repository: CRAN
-Date/Publication: 2026-10-22 18:20:02 UTC
+Date/Publication: 2026-11-17 07:50:09 UTC

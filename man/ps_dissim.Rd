@@ -7,7 +7,7 @@
 ps_dissim(
   ps,
   method = "sorensen",
-  fun = c("vegdist", "designdist", "chaodist"),
+  fun = c("vegdist", "designdist"),
   endemism = FALSE,
   normalize = FALSE,
   tips_only = FALSE,
@@ -24,10 +24,12 @@ ps_dissim(
 \item "sorensen_turnover": The turnover component of Sorensen's dissimilarity, a.k.a. Simpson's.
 \item "sorensen_nestedness": The nestedness component of Sorensen's dissimilarity.
 \item Any other valid \code{method} passed to \code{fun}. For options, see the documentation for those functions.
+The \code{vegdist} methods "morisita", "chao", and "cao" require integer counts, so they're only available for
+non-phylogenetic dissimilarity (\code{tips_only = TRUE}) of abundance data, without \code{endemism} or \code{normalize}.
 }}
 
 \item{fun}{Character indicating which general distance function from the \code{vegan} library to use: "\link[vegan]{vegdist}"
-(the default), "\link[vegan]{designdist}", or "\link[vegan]{chaodist}". (While these functions are not explicitly
+(the default) or "\link[vegan]{designdist}". (While these functions are not explicitly
 designed to calculate phylogenetic beta diversity, their use here incorporates the phylogenetic components.)
 This argument is ignored if one of the three "sorensen" methods is selected.}
 
@@ -94,5 +96,7 @@ Pavoine, S. (2016). A guide through a family of phylogenetic dissimilarity measu
 Oikos, 125(12), 1719-1732.
 }
 \seealso{
-\code{\link[=ps_add_dissim]{ps_add_dissim()}}
+\code{\link[=ps_add_dissim]{ps_add_dissim()}}; \code{\link[=ps_dissim_focal]{ps_dissim_focal()}} for dissimilarity between focal sites and all other
+sites, including the asymmetric \code{"focal_difference"} index; and \code{\link[=ps_dissim_paired]{ps_dissim_paired()}} for dissimilarity
+between two data sets at each site, such as change over time.
 }

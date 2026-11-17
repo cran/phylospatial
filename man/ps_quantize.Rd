@@ -4,17 +4,17 @@
 \alias{ps_quantize}
 \title{Stratified randomization of a phylospatial object}
 \usage{
-ps_quantize(ps, wt_row = NULL, wt_col = NULL, ...)
+ps_quantize(ps, site_groups = NULL, wt_row = NULL, wt_col = NULL, ...)
 }
 \arguments{
 \item{ps}{Object of class \code{phylospatial}}
 
-\item{wt_row, wt_col}{Optional square numeric weight matrices controlling which pairs of
-rows (sites) or columns (species) are likely to exchange values during randomization.
-Enables spatially constrained or functional-group constrained null models; e.g. a
-geographic distance decay matrix from \link{ps_geodist} can be transformed and used as
-\code{wt_row}. See \link[nullcat]{nullcat} for details. If left unspecified (the default),
-gives unweighted randomization.}
+\item{site_groups}{Optional vector giving each site's group, so that sites are randomized
+independently within groups. One element per site (as for \code{site_weight} in \code{\link[=phylospatial]{phylospatial()}})
+or per occupied site. See \code{\link[=ps_rand]{ps_rand()}} for details.}
+
+\item{wt_row, wt_col}{No longer supported, and must be \code{NULL} (the default); supplying
+a weight matrix gives an error. Use \code{site_groups} instead. See \code{\link[=ps_rand]{ps_rand()}} for details.}
 
 \item{...}{Additional arguments passed to \link[nullcat]{quantize}, such as \code{method},
 \code{n_strata}, \code{transform}, \code{fixed}, \code{n_iter}, etc.}
@@ -45,17 +45,9 @@ if (requireNamespace("nullcat", quietly = TRUE)) {
   ps_rand <- ps_quantize(ps, n_strata = 4,
     n_iter = 1000,
     method = "curvecat", fixed = "cell")
-
-  # spatially constrained randomization
-  geo <- as.matrix(ps_geodist(ps))
-  W <- exp(-geo / median(geo))
-  ps_rand <- ps_quantize(ps, n_strata = 4,
-    n_iter = 1000,
-    method = "curvecat", fixed = "cell",
-    wt_row = W)
 }
 }
 }
 \seealso{
-\code{\link[=ps_rand]{ps_rand()}}, \code{\link[=ps_geodist]{ps_geodist()}}
+\code{\link[=ps_rand]{ps_rand()}}
 }

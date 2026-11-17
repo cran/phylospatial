@@ -15,6 +15,7 @@ ps_rand(
   spatial = TRUE,
   n_cores = 1,
   progress = interactive(),
+  site_groups = NULL,
   wt_row = NULL,
   wt_col = NULL,
   ...
@@ -34,7 +35,7 @@ or an actual function:
 package, which offer a wide range of randomization algorithms with different properties.
 \item "nullcat": uses null model algorithms from the \link[nullcat]{nullcat} package. Only works
 with binary community data. This is the recommended path for binary data when mixing diagnostics
-(via \code{ps_suggest_n_iter()}) or spatial weights  (via \code{wt_row} or \code{wt_col}) are desired.
+(via \code{ps_suggest_n_iter()}) are desired.
 \item "quantize": uses \link[nullcat]{quantize}, which converts a quantitative matrix to discrete strata,
 applies a categorical variant of the selected null model, and then maps randomized strata back to values.
 Only works with quantitative (probability or abundance) community data.
@@ -61,10 +62,22 @@ value for your dataset.}
 
 \item{n_rand}{Integer giving the number of random communities to generate.}
 
-\item{summary}{Character indicating which summary statistic to return. If \code{"quantile"}, the default, the function
-returns the proportion of randomizations in which the observed diversity metric was greater than the randomized
-metric. If \code{"zscore"}, it returns a "standardized effect size" or z-score relating the observed value to the mean and
-standard deviation of the randomizations.}
+\item{summary}{Character vector of one or more summary statistics to return, each as a set of
+variables named with the statistic's first letter followed by the metric name (e.g. \code{qPE}, \code{zPE}, \code{tPE}):
+\itemize{
+\item \code{"quantile"} (the default): the proportion of randomizations in which the observed diversity metric
+was greater than the randomized metric, counting ties (randomizations equal to the observed value) as one
+half. A site whose randomized values all equal its observed value (for example, a site the null model
+cannot alter) therefore gets a quantile of 0.5.
+\item \code{"zscore"}: a "standardized effect size" or z-score relating the observed value to the mean and
+standard deviation of the randomizations.
+\item \code{"ties"}: the proportion \code{t} of randomizations whose value equals the observed value. Quantiles are
+bounded within \verb{[t/2, 1 - t/2]}, so a site cannot be significant in either tail at level \code{alpha} when
+\code{t >= 2 * alpha}. Ties are common at sites a null model can rarely change, such as sites alone (or nearly
+so) in their group under \code{site_groups}.
+}
+Whatever the \code{summary}, a warning is given if the randomized values of some sites equal their observed
+values in every randomization.}
 
 \item{spatial}{Logical: should the function return a spatial object (TRUE, default) or a matrix (FALSE).}
 
@@ -72,11 +85,20 @@ standard deviation of the randomizations.}
 
 \item{progress}{Logical: should a progress bar be displayed?}
 
-\item{wt_row, wt_col}{Optional square numeric weight matrices controlling which pairs of
-rows (sites) or columns (species) are likely to exchange values during randomization.
-Only used with \code{fun = "nullcat"} or \code{fun = "quantize"}. Enables spatially or
-trait-constrained null models; e.g. a geographic distance decay matrix from
-\link{ps_geodist} can be used as \code{wt_row}. See \link[nullcat]{nullcat} for details.}
+\item{site_groups}{Optional grouping of sites for a spatially constrained null model, used only with
+\code{fun = "nullcat"} or \code{fun = "quantize"}. Sites are randomized independently within each group, so taxa
+are only redistributed among sites in the same group. Either a vector giving each site's group (e.g. a
+region), applied to every randomization, or a matrix with one column per randomization (\code{n_rand}
+columns), giving a different grouping for each; \code{\link[=ps_tile_groups]{ps_tile_groups()}} generates such a matrix of random
+spatial tilings, which pools each site with its neighbors. Rows (or elements) correspond either to all
+sites, as for the \code{site_weight} argument of \code{\link[=phylospatial]{phylospatial()}}, or to occupied sites only, as returned by
+\code{\link[=ps_tile_groups]{ps_tile_groups()}}. With \code{site_groups}, \code{n_iter} iterations are run within every group; the number
+needed can be more or fewer than for the full matrix, so pass the same \code{site_groups} to
+\code{\link[=ps_suggest_n_iter]{ps_suggest_n_iter()}} to estimate it. See \code{\link[nullcat:nullcat]{nullcat::nullcat()}} for details.}
+
+\item{wt_row, wt_col}{No longer supported, and must be \code{NULL} (the default); supplying a weight matrix
+gives an error. Weighting which pairs of sites exchange values does not constrain the null model
+spatially; use \code{site_groups} instead. See \code{vignette("alpha-diversity")}.}
 
 \item{...}{Additional arguments passed to the selected function: \link[nullcat]{quantize},
 \link[nullcat]{nullcat}, \link[vegan]{simulate.nullmodel}, or a custom function.
@@ -119,14 +141,6 @@ if(requireNamespace("nullcat")){
     rand <- ps_rand(ps2, fun = "nullcat", method = "curvecat", n_iter = 1000)
 }
 
-# spatially constrained randomization using geographic distance weights
-if(requireNamespace("nullcat")){
-    geo <- as.matrix(ps_geodist(ps2))
-    W <- exp(-geo / median(geo))
-    rand <- ps_rand(ps2, fun = "nullcat", method = "curvecat",
-                    n_iter = 1000, wt_row = W)
-}
-
 # using binary data, with a vegan `nullmodel` algorithm
 rand <- ps_rand(ps2, "PD", "nullmodel", "r2")
 
@@ -134,8 +148,18 @@ rand <- ps_rand(ps2, "PD", "nullmodel", "r2")
 ps3 <- ps_simulate(data_type = "abund")
 rand <- ps_rand(ps3, metric = c("ShPD", "SiPD"),
       fun = "nullmodel", method = "abuswap_c")
+
+# spatially constrained null model: randomize within a different random
+# tiling (with 500 km spacing) in each randomization
+if(requireNamespace("nullcat")){
+    ps4 <- moss()
+    tiles <- ps_tile_groups(ps4, spacing = 500e3, n = 20)
+    rand <- ps_rand(ps4, metric = "PE", fun = "quantize", n_rand = 20,
+                    zero_stratum = TRUE, n_iter = 5000,
+                    site_groups = tiles, summary = c("quantile", "ties"))
+}
 }
 }
 \seealso{
-\code{\link[=ps_diversity]{ps_diversity()}}, \code{\link[=ps_geodist]{ps_geodist()}}
+\code{\link[=ps_diversity]{ps_diversity()}}, \code{\link[=ps_tile_groups]{ps_tile_groups()}}, \code{\link[=ps_canape]{ps_canape()}}
 }

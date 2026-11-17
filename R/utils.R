@@ -71,8 +71,10 @@ to_spatial <- function(m, template){
                   terra::values(y) <- x
                   return(y)
             }))
-            names(s) <- colnames(m)
-            terra::varnames(s) <- colnames(m)
+            if(!is.null(colnames(m))){
+                  names(s) <- colnames(m)
+                  terra::varnames(s) <- colnames(m)
+            }
       }
       if(inherits(template, "sf")){
             s <- sf::st_sf(as.data.frame(m), geometry = sf::st_geometry(template))
@@ -309,3 +311,21 @@ enforce_spatial <- function(x) stopifnot("This function only works with `phylosp
 # this gives the position in the edge list, not the node INDEX per se (the number contained in edge list)
 tip_indices <- function(tree, invert = FALSE) which(tree$edge[,2] %in% setdiff(tree$edge[,2], tree$edge[,1]) != invert)
 
+
+# Pairwise weights (`wt_row`, `wt_col`) are no longer supported. Weighting which
+# pairs of rows exchange values in a swap chain does not, in general, give a
+# constrained null: with connected (e.g. distance-decay) weights the chain converges
+# to the unconstrained null. Site groups (`site_groups`) replace them.
+check_no_weights <- function(wt_row = NULL, wt_col = NULL) {
+      supplied <- c("wt_row", "wt_col")[!c(is.null(wt_row), is.null(wt_col))]
+      if (length(supplied) == 0) return(invisible(NULL))
+      msg <- paste0(
+            paste0("`", supplied, "`", collapse = " and "),
+            if (length(supplied) == 1) " is" else " are",
+            " no longer supported and must be NULL. ",
+            "Weighting which pairs of sites exchange values does not produce a spatially ",
+            "constrained null model: with distance-decay weights, the result converges to ",
+            "the unconstrained null as `n_iter` grows. Use `site_groups` instead, to randomize ",
+            "within fixed groups of sites, or within random spatial tilings from `ps_tile_groups()`.")
+      stop(simpleError(msg, call = sys.call(-1)))
+}
